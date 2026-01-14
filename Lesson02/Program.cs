@@ -1,2 +1,2 @@
-﻿using var game = new Lesson02.Game1();
+﻿using var game = new Lesson02.IntroGame();
 game.Run();
