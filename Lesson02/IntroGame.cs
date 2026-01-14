@@ -8,6 +8,8 @@ public class IntroGame : Game {
 	private GraphicsDeviceManager _graphics;
 	private SpriteBatch _spriteBatch;
 
+	private Texture2D _pixel;
+
 	public IntroGame() {
 		_graphics = new GraphicsDeviceManager(this);
 		Content.RootDirectory = "Content";
@@ -23,22 +25,25 @@ public class IntroGame : Game {
 	protected override void LoadContent() {
 		_spriteBatch = new SpriteBatch(GraphicsDevice);
 
-		// TODO: use this.Content to load your game content here
+		_pixel = new Texture2D(GraphicsDevice, 1, 1);
+		_pixel.SetData(new [] {Color.White});
 	}
 
 	protected override void Update(GameTime gameTime) {
-		if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
-			Exit();
-
 		// TODO: Add your update logic here
 
 		base.Update(gameTime);
 	}
 
 	protected override void Draw(GameTime gameTime) {
-		GraphicsDevice.Clear(Color.CornflowerBlue);
+		GraphicsDevice.Clear(Color.Black);
 
-		// TODO: Add your drawing code here
+		_spriteBatch.Begin();
+
+		Rectangle rect = new Rectangle(100, 150, 80, 50);
+		_spriteBatch.Draw(_pixel, rect, Color.White);
+
+		_spriteBatch.End();
 
 		base.Draw(gameTime);
 	}
