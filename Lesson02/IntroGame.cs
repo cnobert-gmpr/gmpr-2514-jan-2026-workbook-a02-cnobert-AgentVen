@@ -10,6 +10,10 @@ public class IntroGame : Game {
 
 	private Texture2D _pixel;
 
+	private float _xPosition = 100, _yPosition = 150;
+	private float _speed = 150;
+	private int _width = 80, _height = 50;
+
 	public IntroGame() {
 		_graphics = new GraphicsDeviceManager(this);
 		Content.RootDirectory = "Content";
@@ -30,9 +34,9 @@ public class IntroGame : Game {
 	}
 
 	protected override void Update(GameTime gameTime) {
-		// TODO: Add your update logic here
-
 		base.Update(gameTime);
+
+		_xPosition += _speed * (float)gameTime.ElapsedGameTime.TotalSeconds;
 	}
 
 	protected override void Draw(GameTime gameTime) {
@@ -40,7 +44,7 @@ public class IntroGame : Game {
 
 		_spriteBatch.Begin();
 
-		Rectangle rect = new Rectangle(100, 150, 80, 50);
+		Rectangle rect = new Rectangle((int)_xPosition, (int)_yPosition, _width, _height);
 		_spriteBatch.Draw(_pixel, rect, Color.White);
 
 		_spriteBatch.End();
