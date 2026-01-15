@@ -8,6 +8,16 @@ public class LoopGame : Game {
 	private GraphicsDeviceManager _graphics;
 	private SpriteBatch _spriteBatch;
 
+	private Texture2D _pixel;
+
+	private Vector2 _position;
+	private Vector2 _dimensions;
+
+	private int _count;
+	private float _spacing;
+
+	private Rectangle[] _rectangles;
+
 	public LoopGame() {
 		_graphics = new GraphicsDeviceManager(this);
 		Content.RootDirectory = "Content";
@@ -15,7 +25,19 @@ public class LoopGame : Game {
 	}
 
 	protected override void Initialize() {
-		// TODO: Add your initialization logic here
+		_position = new Vector2(50, 200);
+		_dimensions = new Vector2(60, 40);
+		_count = 6;
+		_spacing = 10;
+
+		_rectangles = new Rectangle[_count];
+
+		for (int i = 0; i < _count; i++) {
+			float x = _position.X + i * (_dimensions.X + _spacing);
+
+			_rectangles[i] =
+				new Rectangle((int)x, (int)_position.Y, (int)_dimensions.X, (int)_dimensions.Y);
+		}
 
 		base.Initialize();
 	}
@@ -23,22 +45,24 @@ public class LoopGame : Game {
 	protected override void LoadContent() {
 		_spriteBatch = new SpriteBatch(GraphicsDevice);
 
-		// TODO: use this.Content to load your game content here
+		_pixel = new Texture2D(GraphicsDevice, 1, 1);
+		_pixel.SetData(new [] {Color.White});
 	}
 
 	protected override void Update(GameTime gameTime) {
-		if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
-			Exit();
-
-		// TODO: Add your update logic here
-
 		base.Update(gameTime);
 	}
 
 	protected override void Draw(GameTime gameTime) {
 		GraphicsDevice.Clear(Color.CornflowerBlue);
 
-		// TODO: Add your drawing code here
+		_spriteBatch.Begin();
+		
+		foreach(Rectangle r in _rectangles) {
+			_spriteBatch.Draw(_pixel, r, Color.Aquamarine);
+		}
+
+		_spriteBatch.End();
 
 		base.Draw(gameTime);
 	}
