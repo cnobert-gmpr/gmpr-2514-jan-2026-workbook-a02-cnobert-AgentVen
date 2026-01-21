@@ -4,12 +4,12 @@ using Microsoft.Xna.Framework.Input;
 
 namespace Lesson04;
 
-public class Game1 : Game
+public class DisplayingContentGame : Game
 {
     private GraphicsDeviceManager _graphics;
     private SpriteBatch _spriteBatch;
 
-    public Game1()
+    public DisplayingContentGame()
     {
         _graphics = new GraphicsDeviceManager(this);
         Content.RootDirectory = "Content";
