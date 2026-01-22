@@ -4,48 +4,94 @@ using Microsoft.Xna.Framework.Input;
 
 namespace Lesson05;
 
-public class InputGame : Game
-{
-    private GraphicsDeviceManager _graphics;
-    private SpriteBatch _spriteBatch;
+public class InputGame : Game {
+	private GraphicsDeviceManager _graphics;
+	private SpriteBatch _spriteBatch;
 
-    public InputGame()
-    {
-        _graphics = new GraphicsDeviceManager(this);
-        Content.RootDirectory = "Content";
-        IsMouseVisible = true;
-    }
+	private SpriteFont _font;
+	private string _message = "fish";
 
-    protected override void Initialize()
-    {
-        // TODO: Add your initialization logic here
+	private KeyboardState _kbPreviousState, _kbCurrentState;
 
-        base.Initialize();
-    }
+	public InputGame() {
+		_graphics = new GraphicsDeviceManager(this);
+		Content.RootDirectory = "Content";
+		IsMouseVisible = true;
+	}
 
-    protected override void LoadContent()
-    {
-        _spriteBatch = new SpriteBatch(GraphicsDevice);
+	protected override void Initialize() {
+		_kbPreviousState = Keyboard.GetState();
 
-        // TODO: use this.Content to load your game content here
-    }
+		base.Initialize();
+	}
 
-    protected override void Update(GameTime gameTime)
-    {
-        if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
-            Exit();
+	protected override void LoadContent() {
+		_spriteBatch = new SpriteBatch(GraphicsDevice);
+		_font = Content.Load<SpriteFont>("SystemArialFont");
+	}
 
-        // TODO: Add your update logic here
+	protected override void Update(GameTime gameTime) {
+		_kbCurrentState = Keyboard.GetState();
 
-        base.Update(gameTime);
-    }
+		_message = "";
+		#region arrow keys
+		if (_kbCurrentState.IsKeyDown(Keys.Up)) {
+			_message += " " + Keys.Up.ToString();
+		}
+		if (_kbCurrentState.IsKeyDown(Keys.Left)) {
+			_message += " " + Keys.Left.ToString();
+		}
+		if (_kbCurrentState.IsKeyDown(Keys.Right)) {
+			_message += " " + Keys.Right.ToString();
+		}
+		if (_kbCurrentState.IsKeyDown(Keys.Down)) {
+			_message += " " + Keys.Down.ToString();
+		}
+		#endregion
+		if (IsKeyPressed(Keys.Space)) {
+			_message += "\n";
+			_message += "Space pressed\n";
+			_message += "----------------------------------------\n";
+			_message += "----------------------------------------\n";
+			_message += "----------------------------------------\n";
+			_message += "----------------------------------------\n";
+			_message += "----------------------------------------\n";
+			_message += "----------------------------------------\n";
+			_message += "----------------------------------------\n";
+		} else if (_kbCurrentState.IsKeyDown(Keys.Space)) {
+			_message += "\n";
+			_message += "Space held";
+		} else if (_kbPreviousState.IsKeyDown(Keys.Space)) {
+			_message += "\n";
+			_message += "Space released\n";
+			_message += "++++++++++++++++++++++++++++++++++++++++\n";
+			_message += "++++++++++++++++++++++++++++++++++++++++\n";
+			_message += "++++++++++++++++++++++++++++++++++++++++\n";
+			_message += "++++++++++++++++++++++++++++++++++++++++\n";
+			_message += "++++++++++++++++++++++++++++++++++++++++\n";
+			_message += "++++++++++++++++++++++++++++++++++++++++\n";
+			_message += "++++++++++++++++++++++++++++++++++++++++\n";
+		}
 
-    protected override void Draw(GameTime gameTime)
-    {
-        GraphicsDevice.Clear(Color.CornflowerBlue);
+		_kbPreviousState = _kbCurrentState;
+		base.Update(gameTime);
+	}
 
-        // TODO: Add your drawing code here
+	protected override void Draw(GameTime gameTime) {
+		GraphicsDevice.Clear(Color.CornflowerBlue);
 
-        base.Draw(gameTime);
-    }
+		_spriteBatch.Begin();
+		_spriteBatch.DrawString(_font, _message, Vector2.Zero, Color.White);
+		_spriteBatch.End();
+
+		base.Draw(gameTime);
+	}
+
+	private bool IsKeyHeld(Keys key) {
+		return _kbCurrentState.IsKeyDown(key);
+	}
+
+	private bool IsKeyPressed(Keys key) {
+		return _kbPreviousState.IsKeyUp(key) && _kbCurrentState.IsKeyDown(key);
+	}
 }
