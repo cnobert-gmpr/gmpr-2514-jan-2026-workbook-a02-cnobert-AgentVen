@@ -46,6 +46,7 @@ public class DisplayingContentGame : Game {
 
 	protected override void Update(GameTime gameTime) {
 		base.Update(gameTime);
+		_walkingAnimation.Update(gameTime);
 	}
 
 	protected override void Draw(GameTime gameTime) {
