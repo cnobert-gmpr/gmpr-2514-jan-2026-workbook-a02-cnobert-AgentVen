@@ -8,6 +8,13 @@ public class DebugGame : Game {
 	private GraphicsDeviceManager _graphics;
 	private SpriteBatch _spriteBatch;
 
+	private Texture2D _pixel;
+
+	private Vector2 _position;
+	private Vector2 _dimensions;
+
+	private float _speed;
+
 	public DebugGame() {
 		_graphics = new GraphicsDeviceManager(this);
 		Content.RootDirectory = "Content";
@@ -15,7 +22,10 @@ public class DebugGame : Game {
 	}
 
 	protected override void Initialize() {
-		// TODO: Add your initialization logic here
+		_position = new Vector2(60f, 80f);
+		_dimensions = new Vector2(250f, 50f);
+
+		_speed = 120f;
 
 		base.Initialize();
 	}
@@ -23,23 +33,37 @@ public class DebugGame : Game {
 	protected override void LoadContent() {
 		_spriteBatch = new SpriteBatch(GraphicsDevice);
 
-		// TODO: use this.Content to load your game content here
+		_pixel = new Texture2D(GraphicsDevice, 1, 1);
+		_pixel.SetData(new[] { Color.White });
 	}
 
 	protected override void Update(GameTime gameTime) {
-		if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
-			Exit();
-
-		// TODO: Add your update logic here
-
-		base.Update(gameTime);
+		Move(gameTime);
 	}
 
 	protected override void Draw(GameTime gameTime) {
 		GraphicsDevice.Clear(Color.CornflowerBlue);
 
-		// TODO: Add your drawing code here
+		_spriteBatch.Begin();
+
+		Rectangle rect = new Rectangle(
+		    (int)_position.X,
+		    (int)_position.Y,
+		    (int)_dimensions.X,
+		    (int)_dimensions.Y
+		);
+
+		_spriteBatch.Draw(_pixel, rect, Color.Black);
+
+		_spriteBatch.End();
 
 		base.Draw(gameTime);
+	}
+
+	private void Move(GameTime gameTime) {
+		float dt = (float)gameTime.ElapsedGameTime.TotalSeconds;
+		_position.X += _speed * dt;
+
+		base.Update(gameTime);
 	}
 }
