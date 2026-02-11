@@ -13,13 +13,17 @@ public class Ball {
 	private Rectangle PlayAreaBoundingBox;
 
 
-	internal void Initialize(Vector2 _position, Vector2 _direction, float _speed, float _scale, 
+	internal void Initialize(Vector2 ballPosition, Vector2 ballDirection, float ballSpeed, float ballScale, 
 	Rectangle playAreaBoundingBox) {
-		position = _position;
-		direction = _direction;
-		speed = _speed;
-		scale = _scale;
+		position = ballPosition;
+		direction = ballDirection;
+		speed = ballSpeed;
+		scale = ballScale;
 		PlayAreaBoundingBox = playAreaBoundingBox;
+	}
+
+	internal void LoadContent(ContentManager content) {
+		texture = content.Load<Texture2D>("Ball");
 	}
 
 	internal void Update(GameTime gameTime) {
@@ -32,10 +36,6 @@ public class Ball {
 		
 		if (position.Y <= PlayAreaBoundingBox.Top
 		|| position.Y + scale >= PlayAreaBoundingBox.Bottom) direction.Y *= -1;
-	}
-
-	internal void LoadContent(ContentManager content) {
-		texture = content.Load<Texture2D>("Ball");
 	}
 
 	internal void Draw(SpriteBatch spriteBatch) {

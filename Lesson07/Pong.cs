@@ -7,22 +7,16 @@ namespace Lesson07;
 
 public class Pong : Game {
 	private const int _WindowWidth = 750, _WindowHeight = 450, playAreaWallPixelSize = 12;
-	private const float initalPaddleSpeed = 240;
-	private Vector2 paddleSize = new Vector2(8, 124);
-	private const int paddleEdgeOffset = 25;
 
 	private GraphicsDeviceManager _graphics;
 	private SpriteBatch _spriteBatch;
 
 	private Ball _ball;
+	private Paddle _leftPaddle, _rightPaddle;
 
-	private Texture2D backgroundTexture, leftPaddleTexture, rightPaddleTexture;
-
-	private Vector2 leftPaddlePosition, rightPaddlePosition, leftPaddleDirection, rightPaddleDirection;
-	private float leftPaddleSpeed, rightPaddleSpeed;
+	private Texture2D backgroundTexture;
 
 	private int playAreaWallPixelOffset = (int)MathF.Floor(_WindowHeight * ((float)playAreaWallPixelSize / (float)_WindowHeight));
-
 
 	internal Rectangle PlayAreaBoundingBox {
 		get {
@@ -45,21 +39,24 @@ public class Pong : Game {
 		_ball = new Ball();
 		_ball.Initialize(new Vector2(150, 195), new Vector2(-1, -1), 60, 21, PlayAreaBoundingBox);
 
+		#region Paddle initialize
+		float paddleEdgeOffset = 25;
+		Vector2 paddleSize = new Vector2(8, 124);
+
 		// Left paddle
-		leftPaddlePosition = new Vector2(
+		_leftPaddle = new Paddle();
+		_leftPaddle.Initialize(new Vector2(
 			paddleEdgeOffset,
 			(float)_WindowHeight / 2 - paddleSize.Y / 2
-		);
-		leftPaddleDirection = Vector2.Zero;
-		leftPaddleSpeed = initalPaddleSpeed;
+		), paddleSize, 240, PlayAreaBoundingBox);
 
 		// Right paddle
-		rightPaddlePosition = new Vector2(
+		_rightPaddle = new Paddle();
+		_rightPaddle.Initialize(new Vector2(
 			_WindowWidth - paddleEdgeOffset - paddleSize.X,
 			(float)_WindowHeight / 2 - paddleSize.Y / 2
-		);
-		rightPaddleDirection = Vector2.Zero;
-		rightPaddleSpeed = initalPaddleSpeed;
+		), paddleSize, 240, PlayAreaBoundingBox);
+		#endregion
 
 
 		base.Initialize();
@@ -69,8 +66,8 @@ public class Pong : Game {
 		_spriteBatch = new SpriteBatch(GraphicsDevice);
 
 		backgroundTexture = Content.Load<Texture2D>("Court");
-		leftPaddleTexture = Content.Load<Texture2D>("Paddle");
-		rightPaddleTexture = Content.Load<Texture2D>("Paddle");
+		_leftPaddle.LoadContent(this.Content);
+		_rightPaddle.LoadContent(this.Content);
 		_ball.LoadContent(this.Content);
 	}
 
@@ -79,37 +76,17 @@ public class Pong : Game {
 
 		_ball.Update(gameTime);
 
-		#region Keyboard input
 		KeyboardState kbState = Keyboard.GetState();
 
 		// right paddle controls
-		if (kbState.IsKeyDown(Keys.Up)) rightPaddleDirection = -Vector2.UnitY;
-		else if (kbState.IsKeyDown(Keys.Down)) rightPaddleDirection = Vector2.UnitY;
-		else rightPaddleDirection = Vector2.Zero;
+		if (kbState.IsKeyDown(Keys.Up)) _rightPaddle.Update(gameTime, -Vector2.UnitY);
+		else if (kbState.IsKeyDown(Keys.Down)) _rightPaddle.Update(gameTime, Vector2.UnitY);
+		else _rightPaddle.Update(gameTime, Vector2.Zero);
 
 		// left paddle controls
-		if (kbState.IsKeyDown(Keys.W)) leftPaddleDirection = -Vector2.UnitY;
-		else if (kbState.IsKeyDown(Keys.S)) leftPaddleDirection = Vector2.UnitY;
-		else leftPaddleDirection = Vector2.Zero;
-		#endregion
-
-		#region Paddle update
-		leftPaddlePosition += leftPaddleDirection * leftPaddleSpeed * dt;
-
-		if (leftPaddlePosition.Y <= PlayAreaBoundingBox.Top) {
-			leftPaddlePosition.Y = PlayAreaBoundingBox.Top;
-		} else if (leftPaddlePosition.Y + paddleSize.Y >= PlayAreaBoundingBox.Bottom) {
-			leftPaddlePosition.Y = PlayAreaBoundingBox.Bottom - paddleSize.Y;
-		}
-
-		rightPaddlePosition += rightPaddleDirection * rightPaddleSpeed * dt;
-
-		if (rightPaddlePosition.Y <= PlayAreaBoundingBox.Top) {
-			rightPaddlePosition.Y = PlayAreaBoundingBox.Top;
-		} else if (rightPaddlePosition.Y + paddleSize.Y >= PlayAreaBoundingBox.Bottom) {
-			rightPaddlePosition.Y = PlayAreaBoundingBox.Bottom - paddleSize.Y;
-		}
-		#endregion
+		if (kbState.IsKeyDown(Keys.W)) _leftPaddle.Update(gameTime, -Vector2.UnitY);
+		else if (kbState.IsKeyDown(Keys.S)) _leftPaddle.Update(gameTime, Vector2.UnitY);
+		else _leftPaddle.Update(gameTime, Vector2.Zero);
 
 		base.Update(gameTime);
 	}
@@ -124,14 +101,8 @@ public class Pong : Game {
 		_ball.Draw(_spriteBatch);
 
 		// Paddles
-
-		Rectangle leftPaddleRect = new Rectangle(
-			(int)leftPaddlePosition.X, (int)leftPaddlePosition.Y, (int)paddleSize.X, (int)paddleSize.Y);
-		_spriteBatch.Draw(leftPaddleTexture, leftPaddleRect, Color.White);
-
-		Rectangle rightPaddleRect = new Rectangle(
-			(int)rightPaddlePosition.X, (int)rightPaddlePosition.Y, (int)paddleSize.X, (int)paddleSize.Y);
-		_spriteBatch.Draw(rightPaddleTexture, rightPaddleRect, Color.White);
+		_leftPaddle.Draw(_spriteBatch);
+		_rightPaddle.Draw(_spriteBatch);
 
 
 		_spriteBatch.End();
