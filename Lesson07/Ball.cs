@@ -39,8 +39,8 @@ public class Ball {
 	}
 
 	internal void Draw(SpriteBatch spriteBatch) {
-		Rectangle rect = new Rectangle(
-			(int)position.X, (int)position.Y, (int)scale, (int)scale);
+		Rectangle rect = new Rectangle((int)position.X, (int)position.Y, (int)scale, (int)scale);
+		
 		spriteBatch.Draw(texture, rect, Color.White);
 	}
 }

@@ -5,7 +5,7 @@ using Microsoft.Xna.Framework.Graphics;
 namespace Lesson07;
 
 public class Paddle {
-	private Vector2 position, size;
+	private Vector2 position, direction, size;
 	private float speed;
 
 	private Texture2D texture;
@@ -13,9 +13,13 @@ public class Paddle {
 	private Rectangle PlayAreaBoundingBox;
 
 
+	internal Vector2 Direction { set => direction = value; }
+
+
 	internal void Initialize(Vector2 paddlePosition, Vector2 paddleSize,
 	float paddleSpeed, Rectangle playAreaBoundingBox) {
 		position = paddlePosition;
+		direction = Vector2.Zero;
 		size = paddleSize;
 		speed = paddleSpeed;
 		PlayAreaBoundingBox = playAreaBoundingBox;
@@ -25,7 +29,7 @@ public class Paddle {
 		texture = content.Load<Texture2D>("Paddle");
 	}
 
-	internal void Update(GameTime gameTime, Vector2 direction) {
+	internal void Update(GameTime gameTime) {
 		float dt = (float)gameTime.ElapsedGameTime.TotalSeconds;
 
 		position += direction * speed * dt;
@@ -38,8 +42,8 @@ public class Paddle {
 	}
 
 	internal void Draw(SpriteBatch spriteBatch) {
-		Rectangle rect = new Rectangle(
-			(int)position.X, (int)position.Y, (int)size.X, (int)size.Y);
+		Rectangle rect = new Rectangle((int)position.X, (int)position.Y, (int)size.X, (int)size.Y);
+
 		spriteBatch.Draw(texture, rect, Color.White);
 	}
 }

@@ -18,9 +18,11 @@ public class Pong : Game {
 
 	private int playAreaWallPixelOffset = (int)MathF.Floor(_WindowHeight * ((float)playAreaWallPixelSize / (float)_WindowHeight));
 
+
 	internal Rectangle PlayAreaBoundingBox {
 		get {
-			return new Rectangle(0, playAreaWallPixelOffset, _WindowWidth, _WindowHeight - playAreaWallPixelOffset * 2);
+			return new Rectangle(
+				0, playAreaWallPixelOffset, _WindowWidth, _WindowHeight - playAreaWallPixelOffset * 2);
 		}
 	}
 
@@ -58,7 +60,6 @@ public class Pong : Game {
 		), paddleSize, 240, PlayAreaBoundingBox);
 		#endregion
 
-
 		base.Initialize();
 	}
 
@@ -72,21 +73,23 @@ public class Pong : Game {
 	}
 
 	protected override void Update(GameTime gameTime) {
-		float dt = (float)gameTime.ElapsedGameTime.TotalSeconds;
-
 		_ball.Update(gameTime);
 
 		KeyboardState kbState = Keyboard.GetState();
 
 		// right paddle controls
-		if (kbState.IsKeyDown(Keys.Up)) _rightPaddle.Update(gameTime, -Vector2.UnitY);
-		else if (kbState.IsKeyDown(Keys.Down)) _rightPaddle.Update(gameTime, Vector2.UnitY);
-		else _rightPaddle.Update(gameTime, Vector2.Zero);
+		if (kbState.IsKeyDown(Keys.Up)) _rightPaddle.Direction = -Vector2.UnitY;
+		else if (kbState.IsKeyDown(Keys.Down)) _rightPaddle.Direction = Vector2.UnitY;
+		else _rightPaddle.Direction = Vector2.Zero;
+
+		_rightPaddle.Update(gameTime);
 
 		// left paddle controls
-		if (kbState.IsKeyDown(Keys.W)) _leftPaddle.Update(gameTime, -Vector2.UnitY);
-		else if (kbState.IsKeyDown(Keys.S)) _leftPaddle.Update(gameTime, Vector2.UnitY);
-		else _leftPaddle.Update(gameTime, Vector2.Zero);
+		if (kbState.IsKeyDown(Keys.W)) _leftPaddle.Direction = -Vector2.UnitY;
+		else if (kbState.IsKeyDown(Keys.S)) _leftPaddle.Direction = Vector2.UnitY;
+		else _leftPaddle.Direction = Vector2.Zero;
+
+		_leftPaddle.Update(gameTime);
 
 		base.Update(gameTime);
 	}
@@ -100,10 +103,8 @@ public class Pong : Game {
 
 		_ball.Draw(_spriteBatch);
 
-		// Paddles
 		_leftPaddle.Draw(_spriteBatch);
 		_rightPaddle.Draw(_spriteBatch);
-
 
 		_spriteBatch.End();
 
