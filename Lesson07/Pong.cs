@@ -73,8 +73,7 @@ public class Pong : Game {
 	}
 
 	protected override void Update(GameTime gameTime) {
-		_ball.Update(gameTime);
-
+		#region keyboard input
 		KeyboardState kbState = Keyboard.GetState();
 
 		// right paddle controls
@@ -82,14 +81,18 @@ public class Pong : Game {
 		else if (kbState.IsKeyDown(Keys.Down)) _rightPaddle.Direction = Vector2.UnitY;
 		else _rightPaddle.Direction = Vector2.Zero;
 
-		_rightPaddle.Update(gameTime);
-
 		// left paddle controls
 		if (kbState.IsKeyDown(Keys.W)) _leftPaddle.Direction = -Vector2.UnitY;
 		else if (kbState.IsKeyDown(Keys.S)) _leftPaddle.Direction = Vector2.UnitY;
 		else _leftPaddle.Direction = Vector2.Zero;
+		#endregion
 
+		_ball.Update(gameTime);
+		_rightPaddle.Update(gameTime);
 		_leftPaddle.Update(gameTime);
+
+		_ball.ProcessCollision(_leftPaddle.BoundingBox);
+		_ball.ProcessCollision(_rightPaddle.BoundingBox);
 
 		base.Update(gameTime);
 	}

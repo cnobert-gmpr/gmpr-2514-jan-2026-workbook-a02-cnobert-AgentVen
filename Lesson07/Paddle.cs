@@ -13,6 +13,10 @@ public class Paddle {
 	private Rectangle PlayAreaBoundingBox;
 
 
+	internal Rectangle BoundingBox {
+		get { return new Rectangle(position.ToPoint(), size.ToPoint()); }
+	}
+
 	internal Vector2 Direction { set => direction = value; }
 
 
@@ -42,8 +46,6 @@ public class Paddle {
 	}
 
 	internal void Draw(SpriteBatch spriteBatch) {
-		Rectangle rect = new Rectangle((int)position.X, (int)position.Y, (int)size.X, (int)size.Y);
-
-		spriteBatch.Draw(texture, rect, Color.White);
+		spriteBatch.Draw(texture, BoundingBox, Color.White);
 	}
 }

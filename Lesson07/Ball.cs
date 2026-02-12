@@ -13,6 +13,10 @@ public class Ball {
 	private Rectangle PlayAreaBoundingBox;
 
 
+	internal Rectangle BoundingBox { 
+		get => new Rectangle(position.ToPoint(), new Vector2(scale).ToPoint()); 
+	}
+
 	internal void Initialize(Vector2 ballPosition, Vector2 ballDirection, float ballSpeed, float ballScale, 
 	Rectangle playAreaBoundingBox) {
 		position = ballPosition;
@@ -39,8 +43,18 @@ public class Ball {
 	}
 
 	internal void Draw(SpriteBatch spriteBatch) {
-		Rectangle rect = new Rectangle((int)position.X, (int)position.Y, (int)scale, (int)scale);
-		
-		spriteBatch.Draw(texture, rect, Color.White);
+		spriteBatch.Draw(texture, BoundingBox, Color.White);
+	}
+
+
+	internal void ProcessCollision(Rectangle otherBoundingBox) {
+		if (BoundingBox.Intersects(otherBoundingBox)) {
+			// TODO)) Need timed debounce
+
+			Rectangle interect = Rectangle.Intersect(BoundingBox, otherBoundingBox);
+
+			if (interect.Width > interect.Height) direction *= -Vector2.UnitY;
+			else direction *= -Vector2.UnitX;
+		}
 	}
 }
