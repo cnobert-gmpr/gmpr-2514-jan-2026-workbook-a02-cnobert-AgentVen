@@ -5,7 +5,7 @@ using Microsoft.Xna.Framework.Graphics;
 namespace Lesson07;
 
 public class Paddle {
-	private Vector2 position, direction = Vector2.Zero, size;
+	private Vector2 position, size;
 	private float speed;
 
 	private Texture2D texture;
