@@ -3,7 +3,7 @@ using Microsoft.Xna.Framework.Graphics;
 using System;
 using System.Collections.Generic;
 
-namespace Lesson11_MosquitoAttack;
+namespace Lesson08;
 
 public class SimpleAnimation {
 	private readonly Texture2D _texture;
