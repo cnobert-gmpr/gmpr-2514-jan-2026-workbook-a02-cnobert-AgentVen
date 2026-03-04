@@ -5,8 +5,16 @@ using Microsoft.Xna.Framework.Input;
 namespace Lesson08;
 
 public class MosquitoAttack : Game {
+	private const int windowWidth = 550, windowHeight = 400;
+
 	private GraphicsDeviceManager _graphics;
 	private SpriteBatch _spriteBatch;
+
+	private Texture2D backgroundTexture;
+	private SpriteFont font;
+
+	Cannon _cannon;
+
 
 	public MosquitoAttack() {
 		_graphics = new GraphicsDeviceManager(this);
@@ -15,7 +23,12 @@ public class MosquitoAttack : Game {
 	}
 
 	protected override void Initialize() {
-		// TODO: Add your initialization logic here
+		_graphics.PreferredBackBufferWidth = windowWidth;
+		_graphics.PreferredBackBufferHeight = windowHeight;
+		_graphics.ApplyChanges();
+
+		_cannon = new Cannon();
+		_cannon.Initialize(new Vector2(50, 325));
 
 		base.Initialize();
 	}
@@ -23,14 +36,14 @@ public class MosquitoAttack : Game {
 	protected override void LoadContent() {
 		_spriteBatch = new SpriteBatch(GraphicsDevice);
 
-		// TODO: use this.Content to load your game content here
+		backgroundTexture = Content.Load<Texture2D>("Background");
+		font = Content.Load<SpriteFont>("SystemArialFont");
+
+		_cannon.LoadContent(Content);
 	}
 
 	protected override void Update(GameTime gameTime) {
-		if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
-			Exit();
-
-		// TODO: Add your update logic here
+		_cannon.Update(gameTime);
 
 		base.Update(gameTime);
 	}
@@ -38,7 +51,13 @@ public class MosquitoAttack : Game {
 	protected override void Draw(GameTime gameTime) {
 		GraphicsDevice.Clear(Color.CornflowerBlue);
 
-		// TODO: Add your drawing code here
+		_spriteBatch.Begin();
+
+		_spriteBatch.Draw(backgroundTexture, Vector2.Zero, Color.White);
+
+		_cannon.Draw(_spriteBatch);
+
+		_spriteBatch.End();
 
 		base.Draw(gameTime);
 	}
