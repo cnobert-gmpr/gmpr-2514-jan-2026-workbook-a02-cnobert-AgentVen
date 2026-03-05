@@ -6,12 +6,22 @@ namespace Lesson08;
 
 public class Cannon {
 	private SimpleAnimation animation;
-	private Vector2 position;
+	private Vector2 position, direction;
 	private Point dimensions;
+	private float speed;
+
+	internal Vector2 Direction {
+		set {
+			direction = value;
+			if (direction.X < 0) animation.Reverse = true;
+			else animation.Reverse = false;
+		}
+	}
 
 
-	internal void Initialize(Vector2 initPosition) {
+	internal void Initialize(Vector2 initPosition, float initSpeed) {
 		position = initPosition;
+		speed = initSpeed;
 	}
 
 	internal void LoadContent(ContentManager content) {
@@ -21,7 +31,11 @@ public class Cannon {
 	}
 
 	internal void Update(GameTime gameTime) {
-		animation.Update(gameTime);
+		float dt = (float)gameTime.ElapsedGameTime.TotalSeconds;
+
+		position += direction * speed * dt;
+		
+		if (direction != Vector2.Zero) animation.Update(gameTime);
 	}
 
 	internal void Draw(SpriteBatch spriteBatch) {
