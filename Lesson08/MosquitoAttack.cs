@@ -1,11 +1,14 @@
-﻿using Microsoft.Xna.Framework;
+﻿using System;
+using System.Collections.Generic;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 
 namespace Lesson08;
 
 public class MosquitoAttack : Game {
-	private const int windowWidth = 550, windowHeight = 400;
+	private const int WINDOW_WIDTH = 550, WINDOW_HEIGHT = 400;
+	private const int TOTAL_MOSQUITOES = 10;
 
 	private GraphicsDeviceManager _graphics;
 	private SpriteBatch _spriteBatch;
@@ -18,8 +21,10 @@ public class MosquitoAttack : Game {
 
 	private KeyboardState currKeyboardState, prevKeyboardState;
 
-	Cannon _cannon;
+	private Cannon _cannon;
+	private Mosquito[] _mosquitoes;
 
+	private Rectangle BoundingBox { get => new Rectangle(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT); }
 
 	public MosquitoAttack() {
 		_graphics = new GraphicsDeviceManager(this);
@@ -28,12 +33,29 @@ public class MosquitoAttack : Game {
 	}
 
 	protected override void Initialize() {
-		_graphics.PreferredBackBufferWidth = windowWidth;
-		_graphics.PreferredBackBufferHeight = windowHeight;
+		_graphics.PreferredBackBufferWidth = WINDOW_WIDTH;
+		_graphics.PreferredBackBufferHeight = WINDOW_HEIGHT;
 		_graphics.ApplyChanges();
 
 		_cannon = new Cannon();
-		_cannon.Initialize(new Vector2(50, 325), 150);
+		_cannon.Initialize(new Vector2(50, 325), 150, BoundingBox);
+
+		#region Mosquitoes
+		_mosquitoes = new Mosquito[TOTAL_MOSQUITOES];
+		for (int i = 0; i < TOTAL_MOSQUITOES; i++) _mosquitoes[i] = new Mosquito();
+
+		Random mosquitoRandom = new Random();
+		foreach (Mosquito mosquito in _mosquitoes) {
+			Vector2 direction = mosquitoRandom.Next(1, 3) == 2? -Vector2.UnitX : Vector2.UnitX;
+			Vector2 position = new Vector2(
+				mosquitoRandom.Next(1, WINDOW_WIDTH - 50),
+				mosquitoRandom.Next(1, 151)
+			);
+			float speed = mosquitoRandom.Next(150, 251);
+
+			mosquito.Initialize(position, speed, direction, BoundingBox);
+		}
+		#endregion
 
 		gameState = GameState.Playing;
 
@@ -47,6 +69,7 @@ public class MosquitoAttack : Game {
 		font = Content.Load<SpriteFont>("SystemArialFont");
 
 		_cannon.LoadContent(Content);
+		foreach (Mosquito mosquito in _mosquitoes) mosquito.LoadContent(Content);
 	}
 
 	protected override void Update(GameTime gameTime) {
@@ -72,6 +95,7 @@ public class MosquitoAttack : Game {
 				#endregion
 
 				_cannon.Update(gameTime);
+				foreach (Mosquito mosquito in _mosquitoes) mosquito.Update(gameTime);
 
 				break;
 			case GameState.Paused:
@@ -98,10 +122,12 @@ public class MosquitoAttack : Game {
 		switch (gameState) {
 			case GameState.Playing:
 				_cannon.Draw(_spriteBatch);
+				foreach (Mosquito mosquito in _mosquitoes) mosquito.Draw(_spriteBatch);
 
 				break;
 			case GameState.Paused:
 				_cannon.Draw(_spriteBatch);
+				foreach (Mosquito mosquito in _mosquitoes) mosquito.Draw(_spriteBatch);
 
 				_spriteBatch.DrawString(font, "PAUSED", new Vector2(5, 380), Color.White);
 

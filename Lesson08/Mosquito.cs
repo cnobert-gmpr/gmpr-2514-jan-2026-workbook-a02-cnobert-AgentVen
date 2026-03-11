@@ -4,22 +4,13 @@ using Microsoft.Xna.Framework.Graphics;
 
 namespace Lesson08;
 
-public class Cannon {
+public class Mosquito {
 	private SimpleAnimation animation;
-	
+
 	private Vector2 position, direction;
-	private Point dimensions;
 	private float speed;
 
 	private Rectangle gameBoundingBox;
-
-	internal Vector2 Direction {
-		set {
-			direction = value;
-			if (direction.X < 0) animation.Reverse = true;
-			else animation.Reverse = false;
-		}
-	}
 
 	internal Rectangle BoundingBox {
 		get => new Rectangle(
@@ -29,30 +20,35 @@ public class Cannon {
 			(int)animation.FrameDimensions.Y
 		);
 	}
+	
 
-
-	internal void Initialize(Vector2 initPosition, float initSpeed, Rectangle initGameBoundingBox) {
+	internal void Initialize(Vector2 initPosition, float initSpeed, Vector2 initDirection, 
+	Rectangle initGameBoundingBox) {
 		position = initPosition;
 		speed = initSpeed;
+		direction = initDirection;
 		gameBoundingBox = initGameBoundingBox;
 	}
 
 	internal void LoadContent(ContentManager content) {
-		Texture2D texture = content.Load<Texture2D>("Cannon");
-		
-		dimensions = new Point(texture.Width / 4, texture.Height);
-		animation = new SimpleAnimation(texture, dimensions.X, dimensions.Y, 4, 2f);
+		Texture2D texture = content.Load<Texture2D>("Mosquito");
+
+		animation = new SimpleAnimation(texture, texture.Width / 11, texture.Height, 11, 8f);
+		animation.Paused = false;
 	}
 
 	internal void Update(GameTime gameTime) {
 		float dt = (float)gameTime.ElapsedGameTime.TotalSeconds;
 
 		position += direction * speed * dt;
+
+		if(BoundingBox.Left < gameBoundingBox.Left || BoundingBox.Right > gameBoundingBox.Right)
+			direction.X *= -1;
 		
-		if (direction != Vector2.Zero) animation.Update(gameTime);
+		animation.Update(gameTime);
 	}
 
 	internal void Draw(SpriteBatch spriteBatch) {
-		if (animation != null) animation.Draw(spriteBatch, position, SpriteEffects.None);
+		animation.Draw(spriteBatch, position, SpriteEffects.None);
 	}
 }
