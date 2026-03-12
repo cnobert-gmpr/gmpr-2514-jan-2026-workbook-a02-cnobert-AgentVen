@@ -32,7 +32,6 @@ public class Mosquito {
 
 	internal void LoadContent(ContentManager content) {
 		Texture2D texture = content.Load<Texture2D>("Mosquito");
-
 		animation = new SimpleAnimation(texture, texture.Width / 11, texture.Height, 11, 8f);
 		animation.Paused = false;
 	}

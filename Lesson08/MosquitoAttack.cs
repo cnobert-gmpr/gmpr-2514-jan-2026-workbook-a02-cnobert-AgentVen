@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
@@ -89,9 +88,7 @@ public class MosquitoAttack : Game {
 				else _cannon.Direction = Vector2.Zero;
 
 				// Shoot
-				/*if (currKeyboardState.IsKeyDown(Keys.Space)) {
-					// [TODO]
-				}*/
+				if (Pressed(Keys.Space)) _cannon.Fire();
 				#endregion
 
 				_cannon.Update(gameTime);
