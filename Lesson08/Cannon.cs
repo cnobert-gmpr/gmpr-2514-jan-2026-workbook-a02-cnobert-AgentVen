@@ -7,23 +7,21 @@ using Microsoft.Xna.Framework.Graphics;
 namespace Lesson08;
 
 public class Cannon {
+	private const int TOTAL_CANNON_BALLS = 10;
+
 	private SimpleAnimation animation;
 	
 	private Vector2 position, direction;
 	private Point dimensions;
 	private float speed;
 
-	private CannonBall _ball;
+	private CannonBall[] _balls;
 
 	private Rectangle gameBoundingBox;
 
 	internal Rectangle BoundingBox {
 		get => new Rectangle(
-			(int)position.X,
-			(int)position.Y,
-			(int)animation.FrameDimensions.X,
-			(int)animation.FrameDimensions.Y
-		);
+			(int)position.X, (int)position.Y, (int)animation.FrameDimensions.X, (int)animation.FrameDimensions.Y);
 	}
 
 	internal Vector2 Direction {
@@ -40,8 +38,11 @@ public class Cannon {
 		speed = initSpeed;
 		gameBoundingBox = initGameBoundingBox;
 
-		_ball = new CannonBall();
-		_ball.Initialize(50f, gameBoundingBox);
+		_balls = new CannonBall[TOTAL_CANNON_BALLS];
+		for (int i = 0; i < TOTAL_CANNON_BALLS; i++) {
+			_balls[i] = new CannonBall();
+			_balls[i].Initialize(50f, gameBoundingBox);
+		}
 	}
 
 	internal void LoadContent(ContentManager content) {
@@ -49,7 +50,8 @@ public class Cannon {
 		dimensions = new Point(texture.Width / 4, texture.Height);
 		animation = new SimpleAnimation(texture, dimensions.X, dimensions.Y, 4, 2f);
 
-		_ball.LoadContent(content);
+		foreach (CannonBall ball in _balls)
+			ball.LoadContent(content);
 	}
 
 	internal void Update(GameTime gameTime) {
@@ -61,16 +63,26 @@ public class Cannon {
 		
 		if (direction != Vector2.Zero) animation.Update(gameTime);
 
-		_ball.Update(gameTime);
+		foreach (CannonBall ball in _balls)
+			ball.Update(gameTime);
 	}
 
 	internal void Draw(SpriteBatch spriteBatch) {
 		animation?.Draw(spriteBatch, position, SpriteEffects.None);
 
-		_ball.Draw(spriteBatch);
+		foreach (CannonBall ball in _balls)
+			ball.Draw(spriteBatch);
 	}
 
 	internal void Fire() {
-		_ball.Instantiate(position + new Vector2(BoundingBox.Width / 2f - 2, 0), -Vector2.UnitY);
+		foreach (CannonBall ball in _balls) {
+			if (!ball.CanInstantiate) return;
+
+			ball.Instantiate(new Vector2(
+				BoundingBox.Center.X - ball.BoundingBox.Width / 2f, 
+				BoundingBox.Top - ball.BoundingBox.Height), -Vector2.UnitY);
+			
+			return;
+		}
 	}
 }

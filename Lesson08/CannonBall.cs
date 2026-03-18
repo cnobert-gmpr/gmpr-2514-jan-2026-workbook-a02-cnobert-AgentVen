@@ -17,6 +17,8 @@ public class CannonBall {
 	internal Rectangle BoundingBox {
 		get => new Rectangle((int)position.X, (int)position.Y, texture.Width, texture.Height);
 	}
+
+	internal bool CanInstantiate { get => currState == CannonBallState.Idle; }
 	
 
 	internal void Initialize(float initSpeed, Rectangle initGameBoundingBox) {
@@ -39,8 +41,8 @@ public class CannonBall {
 			case CannonBallState.Shot:
 				position += direction * speed * dt;
 
-				if (BoundingBox.Bottom < gameBoundingBox.Top)
-					currState = CannonBallState.None;
+				if(!BoundingBox.Intersects(gameBoundingBox))
+					currState = CannonBallState.Idle;
 				
 				break;
 		}
