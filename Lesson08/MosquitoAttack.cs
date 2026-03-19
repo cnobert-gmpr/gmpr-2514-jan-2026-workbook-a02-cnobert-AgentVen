@@ -92,7 +92,11 @@ public class MosquitoAttack : Game {
 				#endregion
 
 				_cannon.Update(gameTime);
-				foreach (Mosquito mosquito in _mosquitoes) mosquito.Update(gameTime);
+				foreach (Mosquito mosquito in _mosquitoes) {
+					mosquito.Update(gameTime);
+					if (mosquito.Alive && _cannon.ProcessCollision(mosquito.BoundingBox))
+						mosquito.Kill();
+				}
 
 				break;
 			case GameState.Paused:

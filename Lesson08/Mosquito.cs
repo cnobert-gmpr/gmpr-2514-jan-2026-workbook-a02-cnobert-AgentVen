@@ -5,7 +5,10 @@ using Microsoft.Xna.Framework.Graphics;
 namespace Lesson08;
 
 public class Mosquito {
-	private SimpleAnimation animation;
+	private enum MosquitoState { Alive, Dying, Dead };
+	private MosquitoState currState = MosquitoState.Alive;
+
+	private SimpleAnimation animationAlive, animationPoofing;
 
 	private Vector2 position, direction;
 	private float speed;
@@ -14,12 +17,10 @@ public class Mosquito {
 
 	internal Rectangle BoundingBox {
 		get => new Rectangle(
-			(int)position.X,
-			(int)position.Y,
-			(int)animation.FrameDimensions.X,
-			(int)animation.FrameDimensions.Y
-		);
+			(int)position.X, (int)position.Y, (int)animationAlive.FrameDimensions.X, (int)animationAlive.FrameDimensions.Y);
 	}
+	
+	internal bool Alive { get => currState == MosquitoState.Alive; }
 	
 
 	internal void Initialize(Vector2 initPosition, float initSpeed, Vector2 initDirection, 
@@ -32,22 +33,52 @@ public class Mosquito {
 
 	internal void LoadContent(ContentManager content) {
 		Texture2D texture = content.Load<Texture2D>("Mosquito");
-		animation = new SimpleAnimation(texture, texture.Width / 11, texture.Height, 11, 8f);
-		animation.Paused = false;
-	}
+		animationAlive = new SimpleAnimation(texture, texture.Width / 11, texture.Height, 11, 8f);
+		animationAlive.Paused = false;
 
+		texture = content.Load<Texture2D>("Poof");
+		animationPoofing = new SimpleAnimation(texture, texture.Width / 8, texture.Height, 8, 4f);
+	}
+	
 	internal void Update(GameTime gameTime) {
 		float dt = (float)gameTime.ElapsedGameTime.TotalSeconds;
 
-		position += direction * speed * dt;
+		switch (currState) {
+			case MosquitoState.Alive:
+				position += direction * speed * dt;
 
-		if(BoundingBox.Left < gameBoundingBox.Left || BoundingBox.Right > gameBoundingBox.Right)
-			direction.X *= -1;
-		
-		animation.Update(gameTime);
+				if(BoundingBox.Left < gameBoundingBox.Left || BoundingBox.Right > gameBoundingBox.Right)
+					direction.X *= -1;
+				
+				animationAlive.Update(gameTime);
+
+				break;
+			case MosquitoState.Dying:
+				break;
+			case MosquitoState.Dead:
+				break;
+		}
 	}
 
 	internal void Draw(SpriteBatch spriteBatch) {
-		animation.Draw(spriteBatch, position, SpriteEffects.None);
+		switch (currState) {
+			case MosquitoState.Alive:
+				animationAlive.Draw(spriteBatch, position, SpriteEffects.None);
+
+				break;
+			case MosquitoState.Dying:
+				animationPoofing.Draw(spriteBatch, position, SpriteEffects.None);
+
+				break;
+			case MosquitoState.Dead:
+				break;
+		}
+	}
+
+	internal void Kill() {
+		if (!Alive) return;
+
+		currState = MosquitoState.Dead;
+		animationPoofing.Looping = false;
 	}
 }

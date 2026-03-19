@@ -63,7 +63,7 @@ public class Cannon {
 		
 		if (direction != Vector2.Zero) animation.Update(gameTime);
 
-		foreach (CannonBall ball in _balls)
+		foreach (CannonBall ball in _balls) 
 			ball.Update(gameTime);
 	}
 
@@ -84,5 +84,12 @@ public class Cannon {
 			
 			return;
 		}
+	}
+
+	internal bool ProcessCollision(Rectangle otherBoundingBox) {
+		foreach (CannonBall ball in _balls)
+			return ball.ProcessCollision(otherBoundingBox);
+		
+		return false;
 	}
 }

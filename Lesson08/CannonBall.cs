@@ -1,3 +1,4 @@
+using System.Data;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
@@ -5,8 +6,8 @@ using Microsoft.Xna.Framework.Graphics;
 namespace Lesson08;
 
 public class CannonBall {
-	private enum CannonBallState { None, Idle, Shot }
-	private CannonBallState currState  = CannonBallState.Idle;
+	private enum CannonBallState { Idle, Shot, Used }
+	private CannonBallState currState = CannonBallState.Idle;
 
 	private Texture2D texture;
 	private Vector2 position, direction;
@@ -34,39 +35,47 @@ public class CannonBall {
 		float dt = (float)gameTime.ElapsedGameTime.TotalSeconds;
 
 		switch (currState) {
-			case CannonBallState.None:
-				break;
 			case CannonBallState.Idle:
 				break;
 			case CannonBallState.Shot:
 				position += direction * speed * dt;
 
 				if(!BoundingBox.Intersects(gameBoundingBox))
-					currState = CannonBallState.Idle;
+					currState = CannonBallState.Used;
 				
+				break;
+			case CannonBallState.Used:
 				break;
 		}
 	}
 
 	internal void Draw(SpriteBatch spriteBatch) {
 		switch (currState) {
-			case CannonBallState.None:
-				break;
 			case CannonBallState.Idle:
 				break;
 			case CannonBallState.Shot:
 				spriteBatch.Draw(texture, position, Color.White);
 
 				break;
+			case CannonBallState.Used:
+				break;
 		}
 	}
 
 	internal void Instantiate(Vector2 instPosition, Vector2 instDirection) {
-		if (currState == CannonBallState.Shot) return;
+		if (!CanInstantiate) return;
 
 		position = instPosition;
 		direction = instDirection;
 
 		currState = CannonBallState.Shot;
+	}
+
+	internal bool ProcessCollision(Rectangle otherBoundingBox) {
+		if (currState == CannonBallState.Shot && BoundingBox.Intersects(otherBoundingBox)) {
+			currState = CannonBallState.Used;
+			return true;
+		}
+		return false;
 	}
 }
