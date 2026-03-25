@@ -54,6 +54,9 @@ public class Mosquito {
 
 				break;
 			case MosquitoState.Dying:
+				animationPoofing.Update(gameTime);
+				if (animationPoofing.DonePlayingOnce) currState = MosquitoState.Dead;
+				
 				break;
 			case MosquitoState.Dead:
 				break;
@@ -67,7 +70,7 @@ public class Mosquito {
 
 				break;
 			case MosquitoState.Dying:
-				animationPoofing.Draw(spriteBatch, position, SpriteEffects.None);
+				animationPoofing.Draw(spriteBatch, BoundingBox.Center.ToVector2(), SpriteEffects.None);
 
 				break;
 			case MosquitoState.Dead:
@@ -78,7 +81,7 @@ public class Mosquito {
 	internal void Kill() {
 		if (!Alive) return;
 
-		currState = MosquitoState.Dead;
+		currState = MosquitoState.Dying;
 		animationPoofing.Looping = false;
 	}
 }

@@ -76,7 +76,7 @@ public class Cannon {
 
 	internal void Fire() {
 		foreach (CannonBall ball in _balls) {
-			if (!ball.CanInstantiate) return;
+			if (!ball.CanInstantiate) continue;
 
 			ball.Instantiate(new Vector2(
 				BoundingBox.Center.X - ball.BoundingBox.Width / 2f, 
@@ -88,7 +88,7 @@ public class Cannon {
 
 	internal bool ProcessCollision(Rectangle otherBoundingBox) {
 		foreach (CannonBall ball in _balls)
-			return ball.ProcessCollision(otherBoundingBox);
+			if (ball.ProcessCollision(otherBoundingBox)) return true;
 		
 		return false;
 	}
