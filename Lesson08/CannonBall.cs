@@ -5,51 +5,40 @@ using Microsoft.Xna.Framework.Graphics;
 
 namespace Lesson08;
 
-public class CannonBall {
+public class CannonBall : Projectile {
 	private const float TRAIL_SPAWN_TIME = 0.03f;
 	private const int MAX_TRAIL_POSITIONS = 12;
 
-	private enum CannonBallState { Idle, Shot, Used }
-	private CannonBallState currState = CannonBallState.Idle;
-
 	private Texture2D texture;
-	private Vector2 position, direction;
-	private float speed;
 
 	private List<Vector2> trailPositions;
 	private float trailTimer;
-
-	private Rectangle gameBoundingBox;
 
 	internal Rectangle BoundingBox {
 		get => new Rectangle((int)position.X, (int)position.Y, texture.Width, texture.Height);
 	}
 
-	internal bool CanInstantiate { get => currState == CannonBallState.Idle; }
+	internal bool IsSpent { get => projectileState == ProjectileState.Spent; }
 	
 
-	internal void Initialize(float initSpeed, Rectangle initGameBoundingBox) {
-		speed = initSpeed;
-		gameBoundingBox = initGameBoundingBox;
-
-		position = Vector2.Zero;
-		direction = Vector2.Zero;
+	internal override void Initialize(float initSpeed, Rectangle initGameBoundingBox) {
+		base.Initialize(initSpeed, initGameBoundingBox);
 
 		trailPositions = new List<Vector2>();
 		trailTimer = 0;
 	}
 
-	internal void LoadContent(ContentManager content) {
+	internal override void LoadContent(ContentManager content) {
 		texture = content.Load<Texture2D>("CannonBall");
 	}
 
-	internal void Update(GameTime gameTime) {
+	internal override void Update(GameTime gameTime) {
 		float dt = (float)gameTime.ElapsedGameTime.TotalSeconds;
 
-		switch (currState) {
-			case CannonBallState.Idle:
+		switch (projectileState) {
+			case ProjectileState.Idle:
 				break;
-			case CannonBallState.Shot:
+			case ProjectileState.Airborne:
 				position += direction * speed * dt;
 
 				trailTimer += dt;
@@ -63,45 +52,39 @@ public class CannonBall {
 
 				// Out-of-bounds
 				if(!BoundingBox.Intersects(gameBoundingBox)) {
-					currState = CannonBallState.Used;
+					projectileState = ProjectileState.Spent;
 					trailPositions.Clear();
 				}
 				
 				break;
-			case CannonBallState.Used:
+			case ProjectileState.Spent:
 				break;
 		}
 	}
 
-	internal void Draw(SpriteBatch spriteBatch) {
-		switch (currState) {
-			case CannonBallState.Idle:
+	internal override void Draw(SpriteBatch spriteBatch) {
+		switch (projectileState) {
+			case ProjectileState.Idle:
 				break;
-			case CannonBallState.Shot:
+			case ProjectileState.Airborne:
 				spriteBatch.Draw(texture, position, Color.White);
 
 				DrawTrail(spriteBatch);
 
 				break;
-			case CannonBallState.Used:
+			case ProjectileState.Spent:
 				break;
 		}
 	}
 
-	internal void Instantiate(Vector2 instPosition, Vector2 instDirection) {
-		if (!CanInstantiate) return;
-
-		position = instPosition;
-		direction = instDirection;
-
-		currState = CannonBallState.Shot;
+	internal void Reset() {
+		if (projectileState != ProjectileState.Idle)
+			projectileState = ProjectileState.Idle;
 	}
 
-	internal bool ProcessCollision(Rectangle otherBoundingBox) {
-		if (currState == CannonBallState.Shot && BoundingBox.Intersects(otherBoundingBox)) {
-			currState = CannonBallState.Used;
-			trailPositions.Clear();
-
+	internal override bool HasCollidedWith(Rectangle otherBoundingBox) {
+		if (projectileState == ProjectileState.Airborne && BoundingBox.Intersects(otherBoundingBox)) {
+			projectileState = ProjectileState.Spent;
 			return true;
 		}
 		return false;
