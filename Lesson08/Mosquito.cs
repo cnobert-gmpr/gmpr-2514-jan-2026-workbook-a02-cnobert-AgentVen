@@ -4,16 +4,11 @@ using Microsoft.Xna.Framework.Graphics;
 
 namespace Lesson08;
 
-public class Mosquito {
+public class Mosquito : Actor {
 	private enum MosquitoState { Alive, Dying, Dead };
 	private MosquitoState mosquitoState;
 
 	private SimpleAnimation aliveAnimation, dyingAnimation;
-
-	private Vector2 position, direction;
-	private float speed;
-
-	private Rectangle gameBoundingBox;
 
 	private FireBall _fireBall;
 

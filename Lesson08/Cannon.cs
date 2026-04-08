@@ -4,7 +4,7 @@ using Microsoft.Xna.Framework.Graphics;
 
 namespace Lesson08;
 
-public class Cannon {
+public class Cannon : Actor {
 	private const int TOTAL_CANNON_BALLS = 10;
 	private const float RELOAD_TIME = 5f;
 
@@ -13,16 +13,10 @@ public class Cannon {
 
 	private SimpleAnimation moveAnimation;
 	private SimpleAnimation[] explosionAnimations;
-	
-	private Vector2 position, direction;
-	private Point dimensions;
-	private float speed;
 
 	private CannonBall[] _cannonBalls;
 	private int cannonBallsLeft;
 	private float reloadingTimer;
-
-	private Rectangle gameBoundingBox;
 
 	internal Rectangle BoundingBox {
 		get => new Rectangle(
@@ -66,8 +60,7 @@ public class Cannon {
 
 	internal void LoadContent(ContentManager content) {
 		Texture2D texture = content.Load<Texture2D>("Cannon");
-		dimensions = new Point(texture.Width / 4, texture.Height);
-		moveAnimation = new SimpleAnimation(texture, dimensions.X, dimensions.Y, 4, 2f);
+		moveAnimation = new SimpleAnimation(texture, texture.Width / 4, texture.Height, 4, 2f);
 
 		foreach (CannonBall cannonBall in _cannonBalls) cannonBall.LoadContent(content);
 
