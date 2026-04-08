@@ -5,21 +5,22 @@ using Microsoft.Xna.Framework.Graphics;
 namespace Lesson08;
 
 public class FireBall : Projectile {
-	private Texture2D texture;
-
-	internal Rectangle BoundingBox {
-		get => new Rectangle((int)position.X, (int)position.Y, texture.Width, texture.Height);
-	}
+	private SimpleAnimation animation;
 
 
 	internal override void Initialize(float initSpeed, Rectangle initGameBoundingBox) {
 		base.Initialize(initSpeed, initGameBoundingBox);
 
+		dimensions = new Point(4, 4);
+
 		projectileState = ProjectileState.Idle;
 	}
 
 	internal override void LoadContent(ContentManager content) {
-		texture = content.Load<Texture2D>("CannonBall");
+		Texture2D texture = content.Load<Texture2D>("Fireball");
+		animation = new SimpleAnimation(texture, texture.Width / 8, texture.Height, 8, 4f) {
+			Paused = false
+		};
 	}
 
 	internal override void Update(GameTime gameTime) {
@@ -40,26 +41,16 @@ public class FireBall : Projectile {
 		}
 	}
 
-
 	internal override void Draw(SpriteBatch spriteBatch) {
 		switch (projectileState) {
 			case ProjectileState.Idle:
 				break;
 			case ProjectileState.Airborne:
-				spriteBatch.Draw(texture, position, Color.Red);
+				animation.Draw(spriteBatch, position, SpriteEffects.None);
 
 				break;
 			case ProjectileState.Spent:
 				break;
 		}
-	}
-
-
-	internal override bool HasCollidedWith(Rectangle otherBoundingBox) {
-		if (projectileState == ProjectileState.Airborne && BoundingBox.Intersects(otherBoundingBox)) {
-			projectileState = ProjectileState.Spent;
-			return true;
-		}
-		return false;
 	}
 }

@@ -10,8 +10,13 @@ public abstract class Projectile {
 
 	protected Vector2 position, direction;
 	protected float speed;
+	protected Point dimensions;
 
 	protected Rectangle gameBoundingBox;
+
+	internal Rectangle BoundingBox {
+		get => new Rectangle((int)position.X, (int)position.Y, dimensions.X, dimensions.Y);
+	}
 
 	internal bool CanInstantiate { get => projectileState == ProjectileState.Idle; }
 
@@ -40,5 +45,11 @@ public abstract class Projectile {
 		projectileState = ProjectileState.Airborne;
 	}
 
-	internal abstract bool HasCollidedWith(Rectangle otherBoundingBox);
+	internal virtual bool HasCollidedWith(Rectangle otherBoundingBox) {
+		if (projectileState == ProjectileState.Airborne && BoundingBox.Intersects(otherBoundingBox)) {
+			projectileState = ProjectileState.Spent;
+			return true;
+		}
+		return false;
+	}
 }

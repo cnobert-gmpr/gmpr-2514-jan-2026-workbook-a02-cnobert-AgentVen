@@ -14,15 +14,13 @@ public class CannonBall : Projectile {
 	private List<Vector2> trailPositions;
 	private float trailTimer;
 
-	internal Rectangle BoundingBox {
-		get => new Rectangle((int)position.X, (int)position.Y, texture.Width, texture.Height);
-	}
-
 	internal bool IsSpent { get => projectileState == ProjectileState.Spent; }
 	
 
 	internal override void Initialize(float initSpeed, Rectangle initGameBoundingBox) {
 		base.Initialize(initSpeed, initGameBoundingBox);
+
+		dimensions = new Point(4, 4);
 
 		trailPositions = new List<Vector2>();
 		trailTimer = 0;
@@ -77,14 +75,16 @@ public class CannonBall : Projectile {
 		}
 	}
 
+
 	internal void Reset() {
 		if (projectileState != ProjectileState.Idle)
 			projectileState = ProjectileState.Idle;
 	}
 
 	internal override bool HasCollidedWith(Rectangle otherBoundingBox) {
-		if (projectileState == ProjectileState.Airborne && BoundingBox.Intersects(otherBoundingBox)) {
-			projectileState = ProjectileState.Spent;
+		if (base.HasCollidedWith(otherBoundingBox)) {
+			trailPositions.Clear();
+
 			return true;
 		}
 		return false;
