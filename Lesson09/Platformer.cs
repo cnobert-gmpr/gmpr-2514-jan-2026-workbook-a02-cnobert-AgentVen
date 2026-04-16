@@ -5,32 +5,48 @@ using Microsoft.Xna.Framework.Input;
 namespace Lesson09;
 
 public class Platformer : Game {
-	private GraphicsDeviceManager _graphics;
-	private SpriteBatch _spriteBatch;
+	private const int WINDOW_WIDTH = 550, WINDOW_HEIGHT = 400;
+	
+	internal const float GRAVITY = 60f;
+
+	private readonly GraphicsDeviceManager graphics;
+	private SpriteBatch spriteBatch;
+
+	private Player _player;
+
+	private Rectangle gameBoundingBox = new Rectangle(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT);
+
 
 	public Platformer() {
-		_graphics = new GraphicsDeviceManager(this);
+		graphics = new GraphicsDeviceManager(this);
 		Content.RootDirectory = "Content";
 		IsMouseVisible = true;
 	}
 
 	protected override void Initialize() {
-		// TODO: Add your initialization logic here
+		graphics.PreferredBackBufferWidth = WINDOW_WIDTH;
+		graphics.PreferredBackBufferHeight = WINDOW_HEIGHT;
+		graphics.ApplyChanges();
+
+		_player = new Player(new Vector2(50, 50), gameBoundingBox);
+		_player.Initialize();
 
 		base.Initialize();
 	}
 
 	protected override void LoadContent() {
-		_spriteBatch = new SpriteBatch(GraphicsDevice);
+		spriteBatch = new SpriteBatch(GraphicsDevice);
 
-		// TODO: use this.Content to load your game content here
+		_player.LoadContent(Content);
 	}
 
 	protected override void Update(GameTime gameTime) {
-		if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
-			Exit();
+		KeyboardState keyboardState = Keyboard.GetState();
+		if (keyboardState.IsKeyDown(Keys.Left)) _player.Walk(-1);
+		else if (keyboardState.IsKeyDown(Keys.Right)) _player.Walk(1);
+		else _player.Stop();
 
-		// TODO: Add your update logic here
+		_player.Update(gameTime);
 
 		base.Update(gameTime);
 	}
@@ -38,7 +54,11 @@ public class Platformer : Game {
 	protected override void Draw(GameTime gameTime) {
 		GraphicsDevice.Clear(Color.CornflowerBlue);
 
-		// TODO: Add your drawing code here
+		spriteBatch.Begin();
+
+		_player.Draw(spriteBatch);
+
+		spriteBatch.End();
 
 		base.Draw(gameTime);
 	}

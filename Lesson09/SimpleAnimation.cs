@@ -102,4 +102,8 @@ internal class SimpleAnimation {
 		    0f
 		);
 	}
+
+	internal void Reset() {
+		// [TODO]
+	}
 }
