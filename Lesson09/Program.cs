@@ -1,2 +1,2 @@
-﻿using var game = new Lesson09.Game1();
+﻿using var game = new Lesson09.Platformer();
 game.Run();
