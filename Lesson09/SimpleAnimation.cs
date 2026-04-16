@@ -2,7 +2,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using System.Collections.Generic;
 
-namespace Lesson08;
+namespace Lesson09;
 
 internal class SimpleAnimation {
 	private readonly Texture2D _texture;
