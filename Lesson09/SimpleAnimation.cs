@@ -104,6 +104,7 @@ internal class SimpleAnimation {
 	}
 
 	internal void Reset() {
-		// [TODO]
+		_frameIndex = 0;
+		_timer = 0;
 	}
 }

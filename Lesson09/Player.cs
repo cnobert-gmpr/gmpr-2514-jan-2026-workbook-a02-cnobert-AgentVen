@@ -6,8 +6,10 @@ using Microsoft.Xna.Framework.Graphics;
 namespace Lesson09;
 
 public class Player {
-	private enum PlayerState { Idle, Jumping, Walking }
-	private PlayerState playerState;
+	private const int SPEED = 150, JUMP_VELOCITY = -130;
+
+	private enum AnimationState { Idle, Jumping, Walking }
+	private AnimationState animationState;
 
 	private bool isFacingForward = true;
 
@@ -20,17 +22,20 @@ public class Player {
 
 	internal Rectangle BoundingBox { get => new Rectangle(position.ToPoint(), size.ToPoint()); }
 
+	internal Vector2 Velocity { get => velocity; }
+
 
 	public Player(Vector2 constrPosition, Rectangle constrGameBoundingBox) {
 		position = constrPosition;
 		gameBoundingBox = constrGameBoundingBox;
 
 		velocity = Vector2.Zero;
-		size = new Vector2(46, 40);
+		size = new Vector2(35, 34);
+		speed = (float)SPEED;
 	}
 
 	internal void Initialize() {
-		playerState = PlayerState.Idle;
+		animationState = AnimationState.Idle;
 	}
 
 	internal void LoadContent(ContentManager content) {
@@ -64,31 +69,31 @@ public class Player {
 
 		currAnim?.Update(gameTime);
 
-		velocity.Y += Platformer.GRAVITY;
+		velocity.Y += Platformer.GRAVITY * dt;
 
 		position += velocity * dt;
 
 		if (MathF.Abs(velocity.Y) > Platformer.GRAVITY * dt) {
-			playerState = PlayerState.Jumping;
+			animationState = AnimationState.Jumping;
 			currAnim = jumpAnim;
 			currAnim.Reset();
 		}
 
-		switch (playerState) {
-			case PlayerState.Idle:
+		switch (animationState) {
+			case AnimationState.Idle:
 				break;
-			case PlayerState.Jumping:
+			case AnimationState.Jumping:
 				break;
-			case PlayerState.Walking:
+			case AnimationState.Walking:
 				break;
 		}
 	}
 
 	internal void Draw(SpriteBatch spriteBatch) {
-		switch (playerState) {
-			case PlayerState.Idle:
-			case PlayerState.Jumping:
-			case PlayerState.Walking:
+		switch (animationState) {
+			case AnimationState.Idle:
+			case AnimationState.Jumping:
+			case AnimationState.Walking:
 				SpriteEffects spriteEffects = isFacingForward ? SpriteEffects.None : SpriteEffects.FlipHorizontally;
 
 				currAnim?.Draw(spriteBatch, position, spriteEffects);
@@ -102,25 +107,51 @@ public class Player {
 		velocity.X = direction * speed;
 
 		bool prevIsFacingForward = isFacingForward;
-		isFacingForward = velocity.X > 0;
+		if (velocity.X != 0) isFacingForward = velocity.X > 0;
 
-		if (playerState == PlayerState.Idle) {
+		if (animationState == AnimationState.Idle) {
 			currAnim = walkAnim;
 			currAnim.Reset();
-			playerState = PlayerState.Walking;
+			animationState = AnimationState.Walking;
 		}
 
 		if (prevIsFacingForward != isFacingForward)
 			currAnim.Reset();
 	}
 
+	internal void VMove(float direction) {
+		velocity.Y = direction * speed;
+	}
+
+	internal void Jump() {
+		if (animationState != AnimationState.Jumping)
+			velocity.Y = JUMP_VELOCITY;
+	}
+
 	internal void Stop() {
 		velocity = Vector2.Zero;
 
-		if (playerState != PlayerState.Idle) {
+		if (animationState != AnimationState.Idle) {
 			currAnim = idleAnim;
 			currAnim.Reset();
-			playerState = PlayerState.Idle;
+			animationState = AnimationState.Idle;
 		}
+	}
+
+	internal void SnapToSurface(Rectangle boundingBox) {
+		if (animationState == AnimationState.Jumping) {
+			position.Y = boundingBox.Top - size.Y + 1;
+			velocity.Y = 0;
+			animationState = AnimationState.Walking;
+		}
+	}
+
+	internal void Grounded(Rectangle boundingBox, float dt) {
+		velocity.Y -= Platformer.GRAVITY * dt;
+	}
+
+
+	internal void PushForce(Vector2 pushDirection, float dt) {
+		position += pushDirection * dt;
 	}
 }
