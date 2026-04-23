@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework;
+﻿using System.Collections.Generic;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using static Lesson09.Collider;
@@ -16,7 +17,7 @@ public class Platformer : Game {
 	private Player _player;
 
 	private Collider ground;
-	private Collider[] platform01;
+	private List<Platform> _platforms;
 
 	private Rectangle gameBoundingBox = new Rectangle(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT);
 
@@ -35,14 +36,16 @@ public class Platformer : Game {
 		_player = new Player(new Vector2(50, 50), gameBoundingBox);
 		_player.Initialize();
 
-		ground = new Collider(new Vector2(0, WINDOW_HEIGHT - 100), new Vector2(WINDOW_WIDTH, 1), 
+		ground = new Collider(
+			new Vector2(0, WINDOW_HEIGHT - 100), new Vector2(WINDOW_WIDTH, 1),
 			ColliderType.Top);
 
-		platform01 = new Collider[4];
-		platform01[0] = new Collider(new Vector2(160, 230), new Vector2(80, 1), ColliderType.Top);
-		platform01[1] = new Collider(new Vector2(250, 230), new Vector2(1, 20), ColliderType.Right);
-		platform01[2] = new Collider(new Vector2(160, 250), new Vector2(80, 1), ColliderType.Bottom);
-		platform01[3] = new Collider(new Vector2(150, 230), new Vector2(1, 20), ColliderType.Left);
+		_platforms = new List<Platform>();
+		_platforms.Add(new Platform(new Vector2(100, 200), new Vector2(70, 10)));
+		_platforms.Add(new Platform(new Vector2(100, 150), new Vector2(70, 10)));
+		_platforms.Add(new Platform(new Vector2(100, 100), new Vector2(70, 10)));
+		_platforms.Add(new Platform(new Vector2(400, 250), new Vector2(70, 10)));
+		_platforms.Add(new Platform(new Vector2(300, 50), new Vector2(70, 10)));
 		
 		base.Initialize();
 	}
@@ -54,7 +57,7 @@ public class Platformer : Game {
 
 		ground.LoadContent(GraphicsDevice);
 
-		foreach (Collider collider in platform01) collider.LoadContent(GraphicsDevice);
+		foreach (Platform platform in _platforms) platform.LoadContent(GraphicsDevice);
 	}
 
 	protected override void Update(GameTime gameTime) {
@@ -68,11 +71,11 @@ public class Platformer : Game {
 		if (keyboardState.IsKeyDown(Keys.Space)) _player.Jump();
 		#endregion
 
+		_player.Update(gameTime);
+
 		ground.PlayerCollision(_player, gameTime);
 
-		foreach (Collider collider in platform01) collider.PlayerCollision(_player, gameTime);
-
-		_player.Update(gameTime);
+		foreach (Platform platform in _platforms) platform.PlayerCollisions(_player, gameTime);
 
 		base.Update(gameTime);
 	}
@@ -86,7 +89,7 @@ public class Platformer : Game {
 
 		ground.Draw(spriteBatch);
 
-		foreach (Collider collider in platform01) collider.Draw(spriteBatch);
+		foreach (Platform platform in _platforms) platform.Draw(spriteBatch);
 
 		spriteBatch.End();
 

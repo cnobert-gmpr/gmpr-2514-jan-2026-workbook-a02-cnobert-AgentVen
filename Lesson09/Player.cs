@@ -95,7 +95,6 @@ public class Player {
 			case AnimationState.Jumping:
 			case AnimationState.Walking:
 				SpriteEffects spriteEffects = isFacingForward ? SpriteEffects.None : SpriteEffects.FlipHorizontally;
-
 				currAnim?.Draw(spriteBatch, position, spriteEffects);
 
 				break;
@@ -110,9 +109,9 @@ public class Player {
 		if (velocity.X != 0) isFacingForward = velocity.X > 0;
 
 		if (animationState == AnimationState.Idle) {
+			animationState = AnimationState.Walking;
 			currAnim = walkAnim;
 			currAnim.Reset();
-			animationState = AnimationState.Walking;
 		}
 
 		if (prevIsFacingForward != isFacingForward)
@@ -129,29 +128,27 @@ public class Player {
 	}
 
 	internal void Stop() {
-		velocity = Vector2.Zero;
+		velocity.X = 0;
 
 		if (animationState != AnimationState.Idle) {
+			animationState = AnimationState.Idle;
 			currAnim = idleAnim;
 			currAnim.Reset();
-			animationState = AnimationState.Idle;
 		}
 	}
 
-	internal void SnapToSurface(Rectangle boundingBox) {
+	internal void Land(Rectangle boundingBox) {
 		if (animationState == AnimationState.Jumping) {
 			position.Y = boundingBox.Top - size.Y + 1;
 			velocity.Y = 0;
-			animationState = AnimationState.Walking;
+			
+			animationState = AnimationState.Idle;
+			currAnim = idleAnim;
+			currAnim.Reset();
 		}
 	}
 
 	internal void Grounded(Rectangle boundingBox, float dt) {
 		velocity.Y -= Platformer.GRAVITY * dt;
-	}
-
-
-	internal void PushForce(Vector2 pushDirection, float dt) {
-		position += pushDirection * dt;
 	}
 }

@@ -17,7 +17,7 @@ public class Collider {
 
 
 	public Collider(Vector2 constrPosition, Vector2 constrSize, ColliderType constrColliderType) {
-		this.position = constrPosition;
+		position = constrPosition;
 		size = constrSize;
 		colliderType = constrColliderType;
 	}
@@ -61,31 +61,23 @@ public class Collider {
 		if (BoundingBox.Intersects(player.BoundingBox)) {
 			switch (colliderType) {
 				case ColliderType.Top:
-					player.SnapToSurface(BoundingBox);
+					player.Land(BoundingBox);
 					player.Grounded(BoundingBox, dt);
-
-					//player.PushForce(-Vector2.UnitY, dt);
 
 					break;
 				case ColliderType.Right:
 					if (player.Velocity.X < 0)
 						player.Walk(0);
-					
-					//player.PushForce(Vector2.UnitX, dt);
 
 					break;
 				case ColliderType.Bottom:
 					if (player.Velocity.Y < 0)
 						player.VMove(0);
 
-					//player.PushForce(Vector2.UnitY, dt);
-
 					break;
 				case ColliderType.Left:
 					if (player.Velocity.X > 0)
 						player.Walk(0);
-
-					//player.PushForce(-Vector2.UnitX, dt);
 
 					break;
 			}
